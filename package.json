@@ -1,6 +1,6 @@
 {
   "name": "GifRecorder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "GIF MediaRecorder for MediaStreams",
   "main": "dist/GifRecorder.js",
   "scripts": {
