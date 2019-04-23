@@ -26,10 +26,21 @@ export default class GifRecorder extends EventTarget {
     this._state    = "inactive"
     this._stream   = stream
 
+    this._canStart = false
+    this._waitingToStart = false
+
     this._encoder    = null
     this._video    = document.createElement('video')
     this._video.srcObject = stream
     this._video.autoplay = true
+    this._video.addEventListener('loadeddata', () => {
+      this._canvas.width   = this._video.videoWidth
+      this._canvas.height  = this._video.videoHeight
+      if (!this._canStart && this._waitingToStart) {
+        this._canStart = true
+        this.start()
+      }
+    })
     this._canvas   = document.createElement('canvas')
     this._context  = this._canvas.getContext('2d')
 
@@ -74,8 +85,10 @@ export default class GifRecorder extends EventTarget {
   }
   start(timeslice) {
     if (this._state != "inactive") return
-    this._canvas.width   = this._video.videoWidth
-    this._canvas.height  = this._video.videoHeight
+    if (!this._canStart) {
+      this._waitingToStart = true
+      return
+    }
     this._encoder = new window.GifEncoder({
       workers: this._webWorkers,
       quality: this._videoQuality,
@@ -103,6 +116,8 @@ export default class GifRecorder extends EventTarget {
   }
   stop() {
     if (this._state == "inactive") return
+    this._canStart = false
+    this._waitingToStart = false
     this._state = "inactive"
     this._encoder.render()
     this.dispatchEvent(new CustomEvent("stop"))
