@@ -31,7 +31,6 @@ export default class GifRecorder extends EventTarget {
 
     this._encoder    = null
     this._video    = document.createElement('video')
-    this._video.srcObject = stream
     this._video.autoplay = true
     this._video.addEventListener('loadeddata', () => {
       this._canvas.width   = this._video.videoWidth
@@ -85,6 +84,7 @@ export default class GifRecorder extends EventTarget {
   }
   start(timeslice) {
     if (this._state != "inactive") return
+    this._video.srcObject = this._stream
     if (!this._canStart) {
       this._waitingToStart = true
       return
