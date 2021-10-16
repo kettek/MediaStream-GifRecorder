@@ -12,6 +12,16 @@ navigator.mediaDevices.getUserMedia({ video: true })
     videoFramesPerSecond: 5,
     videoQuality: 10,
     videoDithering: false,
+
+    // optional source and destination rectangles
+    sx: 200,
+    sy: 50,
+    swidth: 1920,
+    sheight: 1080,
+    dx: 0,
+    dy: 0,
+    dwidth: 1080,
+    dheight: 720,
   })
 
   recorder.addEventListener('dataavailable', (e) => {

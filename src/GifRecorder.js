@@ -10,19 +10,21 @@ if (typeof BlobEvent == 'undefined') {
   }
 }
 
+const hasKeys = (arr, keys) => keys.every((key) => arr.includes(key));
+
 export default class GifRecorder extends EventTarget {
   constructor(stream, options) {
     super()
-    options = Object.assign({
+    this.options = Object.assign({
       videoFramesPerSecond: 5,
       videoDithering: "FloydSteinberg", // false(none), true/"FloydSteinberg", "FalseFloydSteinberg", "Stucki", "Atkinson", also "-serpentine"
       videoQuality: 10, // 1-30
       webWorkers: 4,
     }, options)
-    this._videoFramesPerSecond  = options.videoFramesPerSecond
-    this._videoDithering        = options.videoDithering
-    this._videoQuality          = options.videoQuality
-    this._webWorkers            = options.webWorkers
+    this._videoFramesPerSecond  = this.options.videoFramesPerSecond
+    this._videoDithering        = this.options.videoDithering
+    this._videoQuality          = this.options.videoQuality
+    this._webWorkers            = this.options.webWorkers
     this._state    = "inactive"
     this._stream   = stream
 
@@ -33,8 +35,8 @@ export default class GifRecorder extends EventTarget {
     this._video    = document.createElement('video')
     this._video.autoplay = true
     this._video.addEventListener('loadeddata', () => {
-      this._canvas.width   = this._video.videoWidth
-      this._canvas.height  = this._video.videoHeight
+      this._canvas.width   = this.options['dwidth'] ? this.options.dwidth : this._video.videoWidth
+      this._canvas.height  = this.options['dheight'] ? this.options.dheight : this._video.videoHeight
       if (!this._canStart && this._waitingToStart) {
         this._canStart = true
         this.start()
@@ -129,7 +131,13 @@ export default class GifRecorder extends EventTarget {
     this._accumulator += ts - this._lastTimestamp
     var delay = 1 / this._videoFramesPerSecond * 1000
     while (this._accumulator >= delay) {
-      this._context.drawImage(this._video, 0, 0)
+      const options = this.options;
+      const optKeys = Object.keys(options);
+      if (hasKeys(optKeys, ['sx', 'sy', 'swidth', 'sheight', 'dx', 'dy', 'dwidth', 'dheight'])) {
+        this._context.drawImage(this._video, options.sx, options.sy, options.swidth, options.sheight, options.dx, options.dy, options.dwidth, options.dheight);
+      } else {
+        this._context.drawImage(this._video, 0, 0)
+      }
       this._encoder.addFrame(this._context, {copy: true, delay: delay})
   
       this._accumulator -= delay
