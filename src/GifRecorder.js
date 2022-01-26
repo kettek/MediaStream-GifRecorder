@@ -33,7 +33,9 @@ export default class GifRecorder extends EventTarget {
 
     this._encoder    = null
     this._video    = document.createElement('video')
+    this._video.muted = true
     this._video.autoplay = true
+    this._video.playsInline = true
     this._video.addEventListener('loadeddata', () => {
       this._canvas.width   = this.options['dwidth'] ? this.options.dwidth : this._video.videoWidth
       this._canvas.height  = this.options['dheight'] ? this.options.dheight : this._video.videoHeight
