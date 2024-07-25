@@ -14,8 +14,8 @@
   "author": "Ketchetwahmeegwun T. Southall",
   "license": "MIT",
   "devDependencies": {
-    "GifEncoder": "https://github.com/kettek/GifEncoder",
     "event-target-shim": "^5.0.1",
+    "GifEncoder": "https://github.com/kettek/GifEncoder",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11"
   }
